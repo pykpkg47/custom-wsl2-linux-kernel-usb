@@ -26,6 +26,10 @@ jobs:
           sudo apt install -y build-essential flex bison dwarves libssl-dev libelf-dev zstd
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup cache
+        run: |
+          ln -s /dev/shm .ccache
+          ls -al
       - name: Cache
         uses: hendrikmuhs/ccache-action@v1.2
         with:

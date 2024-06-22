@@ -21,14 +21,9 @@ fi
 script_ver='2.0'
 
 ##
-## set the available cpu thread and core count for parallel processing (speeds up the build process)
+## Set the number of processes to cores * 2
 ##
-if [ -f '/proc/cpuinfo' ]; then
-    cpu_threads="$(grep -c ^processor '/proc/cpuinfo')"
-else
-    cpu_threads="$(nproc --all)"
-fi
-cpu_cores="$(grep ^cpu\\scores '/proc/cpuinfo' | uniq | awk '{print $4}')"
+cpu_cores="$(grep ^cpu\\scores '/proc/cpuinfo' | uniq | awk '{print $4 * 2}')"
 
 ##
 ## Download the Microsoft kernel source
@@ -89,7 +84,7 @@ installed() { return $(dpkg-query -W -f '${Status}\n' "$1" 2>&1 | awk '/ok insta
 echo "WSL2-Custom-Kernel build script v$script_ver"
 echo '======================================'
 echo
-echo "The script will utilize ( $cpu_threads cpu cores )"
+echo "The script will utilize ( $cpu_cores cpu cores )"
 echo
 echo "Downloading Microsoft kernel from version ${KERNEL_VERSION}..."
 echo '===================================='
