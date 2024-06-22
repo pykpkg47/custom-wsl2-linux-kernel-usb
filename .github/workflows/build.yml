@@ -36,9 +36,8 @@ jobs:
             ${{ runner.os }}-
       - name: Build Kernel
         run: |
-          echo "KERNEL_VERSION=${{ env.KERNEL_VERSION }}" >> $GITHUB_ENV
           sudo apt-get update -yqq
-          sudo bash build-kernel
+          sudo bash build-kernel ${{ env.KERNEL_VERSION }}
       - name: Upload Kernel
         uses: actions/upload-artifact@v3
         with:
