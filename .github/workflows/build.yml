@@ -13,6 +13,7 @@ on:
   workflow_dispatch: {}
 
 env:
+  ACTIONS_STEP_DEBUG: true
   KERNEL_VERSION: 6.1.21.2
 
 jobs:
@@ -36,6 +37,7 @@ jobs:
             ${{ runner.os }}-
       - name: Build Kernel
         run: |
+          tree
           sudo apt-get update -yqq
           sudo bash build-kernel ${{ env.KERNEL_VERSION }}
       - name: Upload Kernel
