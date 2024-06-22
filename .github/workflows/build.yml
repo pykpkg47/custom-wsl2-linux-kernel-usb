@@ -31,13 +31,13 @@ jobs:
             ./linux-msft-wsl-${{ env.KERNEL_VERSION }}.tar.gz
             ./**/*.o
             ./**/*.a
+            !./linux-msft-wsl-${{ env.KERNEL_VERSION }}/tools/bpf
           restore-keys: |
             ${{ runner.os }}-build-${{ env.KERNEL_VERSION }}
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - name: Build Kernel
         run: |
-          tree
           sudo apt-get update -yqq
           sudo bash build-kernel ${{ env.KERNEL_VERSION }}
       - name: Upload Kernel
