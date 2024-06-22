@@ -36,9 +36,9 @@ jobs:
             ${{ runner.os }}-
       - name: Build Kernel
         run: |
+          echo "KERNEL_VERSION=${{ env.KERNEL_VERSION }}" >> $GITHUB_ENV
           sudo apt-get update -yqq
           sudo bash build-kernel
-          cp linux-msft-wsl-*/arch/x86/boot/bzImage .
       - name: Upload Kernel
         uses: actions/upload-artifact@v3
         with:
