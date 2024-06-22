@@ -12,6 +12,9 @@ on:
   workflow_call: {}
   workflow_dispatch: {}
 
+env:
+  KERNEL_VERSION: 6.1.21.2
+
 jobs:
   build:
     name: Build
@@ -19,18 +22,30 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Cache
+        uses: actions/cache@4
+        with:
+          key: ${{ runner.os }}-build-${{ env.KERNEL_VERSION }}-${{ hashFiles('config-wsl') }}-${{ github.sha }}
+          path: |
+            ./linux-msft-wsl-${{ env.KERNEL_VERSION }}.tar.gz
+            ./**/*.o
+            ./**/*.a
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.KERNEL_VERSION }}
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
       - name: Build Kernel
         run: |
           sudo apt-get update -yqq
           sudo bash build-kernel
-          cp linux-msft-wsl-*/vmlinux .
+          cp linux-msft-wsl-*/arch/x86/boot/bzImage .
       - name: Upload Kernel
         uses: actions/upload-artifact@v3
         with:
-          name: vmlinux
-          path: vmlinux
+          name: bzImage
+          path: linux-msft-wsl-${{ env.KERNEL_VERSION }}/arch/x86/boot/bzImage
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: vmlinux
+          files: bzImage

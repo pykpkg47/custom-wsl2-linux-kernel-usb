@@ -1,7 +1,9 @@
 #!/bin/bash
 # shellcheck disable=SC2016,SC2046,SC2066,SC2068,SC2086,SC2162,SC2317
 
-clear
+if [ ${#TERM} -gt 0 ] && [ ! $TERM == "unknown" ]; then
+    clear
+fi
 
 ###########################################################################################################
 ##
@@ -104,7 +106,6 @@ cleanup_fn()
         echo 'Bad user input'
         echo
         read -p 'Press enter to try again.'
-        clear
         cleanup_fn
     fi
 }
@@ -146,7 +147,7 @@ download()
     fi
 
     if [ ! -f "$dl_path/$dl_file" ]; then
-        echo "Downloading $1 as $dl_file"
+        echo "Downloading $1 as ${dl_path}/${dl_file}"
         if ! curl -Lso "$dl_path/$dl_file" "$1"; then
             echo
             echo "The script failed to download \"$1\" and will try again in 10 seconds"
@@ -165,8 +166,9 @@ download()
         echo "$dl_file is already downloaded"
     fi
 
+    echo "Extracting to \"${dl_path}/${target_dir}\"..."
     make_dir "$dl_path/$target_dir"
-
+    
     if [ -n "$3" ]; then
         if ! tar -xf "$dl_path/$dl_file" -C "$dl_path/$target_dir" &>/dev/null; then
             fail_fn "Failed to extract $dl_file"
@@ -194,7 +196,7 @@ execute()
 build()
 {
     echo
-    echo "building $1 - version $2"
+    echo "Building $1 - version $2"
     echo '===================================='
 
     if [ -f "$PWD/$1.done" ]; then
@@ -217,7 +219,6 @@ build_done() { echo "$2" > "$PWD/$1.done"; }
 
 installed() { return $(dpkg-query -W -f '${Status}\n' "$1" 2>&1 | awk '/ok installed/{print 0;exit}{print 1}'); }
 
-clear
 echo "WSL2-Custom-Kernel build script v$script_ver"
 echo '======================================'
 
@@ -261,12 +262,10 @@ build_pkgs_fn()
 # install required apt packages
 build_pkgs_fn
 
-VERSION=6.1.21.2
-
-if build 'wsl2-linux-kernel' "linux-msft-wsl-${VERSION}"; then
-    download "https://api.github.com/repos/microsoft/WSL2-Linux-Kernel/tarball/linux-msft-wsl-${VERSION}" "linux-msft-wsl-${VERSION}.tar.gz"
-    echo 'yes' | make KCONFIG_CONFIG=../config-wsl -j "$cpu_cores"
-    build_done 'wsl2-linux-kernel' "linux-msft-wsl-${VERSION}"
+if build 'wsl2-linux-kernel' "linux-msft-wsl-${KERNEL_VERSION}"; then
+    download "https://api.github.com/repos/microsoft/WSL2-Linux-Kernel/tarball/linux-msft-wsl-${KERNEL_VERSION}" "linux-msft-wsl-${KERNEL_VERSION}.tar.gz"
+    make bzImage KCONFIG_CONFIG=../config-wsl -j "$cpu_cores"
+    build_done 'wsl2-linux-kernel' "linux-msft-wsl-${KERNEL_VERSION}"
 fi
 
 exit_fn
