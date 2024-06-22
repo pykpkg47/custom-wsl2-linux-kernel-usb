@@ -28,9 +28,9 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.KERNEL_VERSION }}-${{ hashFiles('config-wsl') }}-${{ github.sha }}
           path: |
             ./linux-msft-wsl-${{ env.KERNEL_VERSION }}.tar.gz
+            ./linux-msft-wsl-${{ env.KERNEL_VERSION }}/tools/bpf
             ./**/*.o
             ./**/*.a
-            !./linux-msft-wsl-${{ env.KERNEL_VERSION }}/tools/bpf
           restore-keys: |
             ${{ runner.os }}-build-${{ env.KERNEL_VERSION }}-${{ hashFiles('config-wsl') }}-
             ${{ runner.os }}-build-${{ env.KERNEL_VERSION }}-
