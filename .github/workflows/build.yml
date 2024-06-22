@@ -13,7 +13,6 @@ on:
   workflow_dispatch: {}
 
 env:
-  ACTIONS_STEP_DEBUG: true
   KERNEL_VERSION: 6.1.21.2
 
 jobs:
@@ -33,7 +32,8 @@ jobs:
             ./**/*.a
             !./linux-msft-wsl-${{ env.KERNEL_VERSION }}/tools/bpf
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.KERNEL_VERSION }}
+            ${{ runner.os }}-build-${{ env.KERNEL_VERSION }}-${{ hashFiles('config-wsl') }}-
+            ${{ runner.os }}-build-${{ env.KERNEL_VERSION }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - name: Build Kernel
