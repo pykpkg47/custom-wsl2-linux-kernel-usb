@@ -39,12 +39,12 @@ jobs:
           sudo apt-get update -yqq
           sudo bash build-kernel ${{ env.KERNEL_VERSION }}
       - name: Upload Kernel
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bzImage
           path: linux-msft-wsl-${{ env.KERNEL_VERSION }}/arch/x86/boot/bzImage
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: bzImage
