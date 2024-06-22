@@ -88,15 +88,8 @@ installed() { return $(dpkg-query -W -f '${Status}\n' "$1" 2>&1 | awk '/ok insta
 
 echo "WSL2-Custom-Kernel build script v$script_ver"
 echo '======================================'
-
 echo
-echo "The script will utilize ( $cpu_threads cpu cores ) for parallel processing to accelerate the build speed."
-
-# install required apt packages
-echo
-echo "Installing necessary packages..."
-sudo apt install -y build-essential flex bison dwarves libssl-dev libelf-dev zstd
-
+echo "The script will utilize ( $cpu_threads cpu cores )"
 echo
 echo "Downloading Microsoft kernel from version ${KERNEL_VERSION}..."
 echo '===================================='
@@ -106,7 +99,7 @@ download "https://api.github.com/repos/microsoft/WSL2-Linux-Kernel/tarball/linux
 echo
 echo "Building custom kernel..."
 echo '===================================='
-make bzImage KCONFIG_CONFIG=../config-wsl -j "$cpu_cores"
+make CC="ccache gcc" KCONFIG_CONFIG="../config-wsl" -j "$cpu_cores"
 
 echo
 echo '===================================='

@@ -20,26 +20,24 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - name: Install apt packages
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential flex bison dwarves libssl-dev libelf-dev zstd
       - name: Checkout
         uses: actions/checkout@v4
       - name: Cache
-        uses: actions/cache@v4
+        uses: hendrikmuhs/ccache-action@v1.2
         with:
+          max-size: "800MB"
           key: ${{ runner.os }}-build-${{ env.KERNEL_VERSION }}-${{ hashFiles('config-wsl') }}-${{ github.sha }}
-          path: |
-            ./linux-msft-wsl-${{ env.KERNEL_VERSION }}.tar.gz
-            ./linux-msft-wsl-${{ env.KERNEL_VERSION }}/tools
-            ./**/*.o
-            ./**/*.a
           restore-keys: |
             ${{ runner.os }}-build-${{ env.KERNEL_VERSION }}-${{ hashFiles('config-wsl') }}-
             ${{ runner.os }}-build-${{ env.KERNEL_VERSION }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - name: Build Kernel
-        run: |
-          sudo apt-get update -yqq
-          sudo bash build-kernel ${{ env.KERNEL_VERSION }}
+        run: bash build-kernel ${{ env.KERNEL_VERSION }}
       - name: Upload Kernel
         uses: actions/upload-artifact@v4
         with:
